@@ -1,46 +1,76 @@
-	--Geometry------------------------------------------------------------------------
-	FBXExporterSetParam "SmoothingGroups" true
-	FBXExporterSetParam "NormalsPerPoly" false
-	FBXExporterSetParam "TangentSpaceExport" true
-	FBXExporterSetParam "SmoothMeshExport" false
-	FBXExporterSetParam "Preserveinstances" false
-	FBXExporterSetParam "SelectionSetExport" false
-	FBXExporterSetParam "GeomAsBone" false
-	FBXExporterSetParam "ColladaTriangulate" true
-	FBXExporterSetParam "PreserveEdgeOrientation" true
-	--Animation------------------------------------------------------------------------
-	FBXExporterSetParam "Animation" false
-	--Cameras------------------------------------------------------------------------
-	FBXExporterSetParam "Cameras" false
-	--Lights------------------------------------------------------------------------
-	FBXExporterSetParam "Lights" false
-	--Embed Media--------------------------------------------------------------------
-	FBXExporterSetParam "EmbedTextures" false
-	--Units----------------------------------------------------------------------------
-	--Axis Conversion-----------------------------------------------------------------
-	FBXExporterSetParam "AxisConversionMethod" "None"
-	FBXExporterSetParam "UpAxis" "Y" 
-	--UI----------------------------------------------------------------
-	FBXExporterSetParam "ShowWarnings" true
-	FBXExporterSetParam "GenerateLog" false
-	--FBX File Format----------------------------------------------------------------
-	FBXExporterSetParam "ASCII" true
-	FBXExporterSetParam "FileVersion" "FBX201200"
+Macroscript AR_UDK_BatchExporter	category:"Custom"
+tooltip:"Export a batch of mesh for the Unreal Engine, ready to be import as a static mesh"
+buttontext:"UDK Batch Exporter"
 
-rollout MainWindow "UDK Batch Exporter"
+--rollout MainWindow "UDK Batch Exporter"
 (
   button theButton "Please select what you want to export."
 	    on theButton pressed do
 		(
-			SelectionList = getCurrentSelection()
+			--This save the state of the whole scene
+			holdMaxFile() 
+			--Declare the index of the array
 			i=1
-			newFileName = SelectionList[i].name
-			print SelectionList[i].name
-			SelectionList.pos = [0,0,0]
+			All= $.count
+			--Getting the selection of the user
+			MeshSelected = getCurrentSelection()
+			--Move every selected mesh to the origin
+			selection.position = [0,0,0]
+			--Get the export folder
 			newFilePath = getSavePath()
-			completeFilePath = (newFilePath + "\\" + newFileName)  
-			exportFile completeFilePath #noPrompt selectedOnly:true using:FBXEXP
+			--Setting the FBXExporter for a staticmesh for UDK----------------------------
+			--Geometry------------------------------------------------------------------------
+			FBXExporterSetParam "SmoothingGroups" true
+			FBXExporterSetParam "NormalsPerPoly" false
+			FBXExporterSetParam "TangentSpaceExport" true
+			FBXExporterSetParam "SmoothMeshExport" false
+			FBXExporterSetParam "Preserveinstances" false
+			FBXExporterSetParam "SelectionSetExport" false
+			FBXExporterSetParam "GeomAsBone" false
+			FBXExporterSetParam "Triangulate" true
+			FBXExporterSetParam "PreserveEdgeOrientation" true
+			--Animation------------------------------------------------------------------------
+			FBXExporterSetParam "Animation" false
+			--Cameras------------------------------------------------------------------------
+			FBXExporterSetParam "Cameras" false
+			--Lights------------------------------------------------------------------------
+			FBXExporterSetParam "Lights" false
+			--Embed Media--------------------------------------------------------------------
+			FBXExporterSetParam "EmbedTextures" false
+			--Units----------------------------------------------------------------------------
+			--Axis Conversion-----------------------------------------------------------------
+			FBXExporterSetParam "AxisConversionMethod" "None"
+			FBXExporterSetParam "UpAxis" "Y" 
+			--UI----------------------------------------------------------------
+			FBXExporterSetParam "ShowWarnings" true
+			FBXExporterSetParam "GenerateLog" false
+			--FBX File Format----------------------------------------------------------------
+			FBXExporterSetParam "ASCII" false
+			FBXExporterSetParam "FileVersion" "FBX201200"
+			--This will export every mesh selected as separe file. Each file will have the name of the mesh.
+			for i=1 to All do
+				(
+					--Modifier XForm apply
+					resetxform $;
+					--The Modifier Stack is collapse
+					collapseStack $
+					--And finally convert into a Editable Poly
+					ConvertTo $ Editable_Poly							
+							n = MeshSelected[i].name
+							prefix = edtUdk.text
+							check = findString n prefix
+							print n
+							print check
+							if check != undefined do continue
+					select MeshSelected[i]
+					newFileName = $.name
+					completeFilePath = (newFilePath + "\\" + newFileName)  
+					exportFile completeFilePath #noPrompt selectedOnly:true using:FBXEXP
+				)
 			DestroyDialog MainWindow
+			--Put back the state of the scene before export
+			fetchMaxFile quiet:true
+			--Giving the user some feedback
 			messagebox "It's done!"
 		)
   button CancelButton "Cancel"
@@ -50,32 +80,12 @@ rollout MainWindow "UDK Batch Exporter"
   )
   --ceci détermine la taille de MainWindow
 createDialog MainWindow 220 60
-  
-  --for current in geometry do
-(
-    SelectionList = getCurrentSelection()
-    newFileName = SelectionList[i].name
-	print SelectionList[i].name
-	newFilePath = getSavePath()
-	completeFilePath = (newFilePath + "\\" + newFileName)  
-	
-    exportFile completeFilePath #noPrompt selectedOnly:true using:FBXEXP
-)
-	--(
-	--i=1
-    --SelectionList = getCurrentSelection()
-	--for i=1 to SelectionList.count do
-	--getCurrentSelection()
-    --newFileName = SelectionList[i].name
-	--print SelectionList[i].name
-	--newFileName = current.name
-	--newFilePath = getSavePath()
-	--completeFilePath = getSavepath
-    -- newFilePath = pathConfig.GetDir #export
-	--completeFilePath = (newFilePath + "\\" + newFileName)  
-	
-    --exportFile completeFilePath #noPrompt selectedOnly:true using:FBXEXP
-	--)
 
---clearSelection()
 
+MeshSelected = getCurrentSelection()
+n = MeshSelected[i].name
+prefix = "MCDXCX"
+check = findString n prefix
+print n
+print check
+if check != undefined do continue
