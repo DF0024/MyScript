@@ -1,8 +1,10 @@
-Macroscript AR_UDK_BatchExporter	category:"Custom"
-tooltip:"Export a batch of mesh for the Unreal Engine, ready to be import as a static mesh"
-buttontext:"UDK Batch Exporter"
+Macroscript AR_UDK_BatchExporter	
+category:"Custom"
+tooltip:"Export a batch of mesh for the Unreal Engine, ready to be import as a static mesh."
+buttontext:"UDK Exporter" 
 
---rollout MainWindow "UDK Batch Exporter"
+(
+rollout MainWindow "UDK Exporter"
 (
   button theButton "Please select what you want to export."
 	    on theButton pressed do
@@ -55,15 +57,9 @@ buttontext:"UDK Batch Exporter"
 					--The Modifier Stack is collapse
 					collapseStack $
 					--And finally convert into a Editable Poly
-					ConvertTo $ Editable_Poly							
-							n = MeshSelected[i].name
-							prefix = edtUdk.text
-							check = findString n prefix
-							print n
-							print check
-							if check != undefined do continue
+					ConvertTo $ Editable_Poly
 					select MeshSelected[i]
-					newFileName = $.name
+					newFileName = MeshSelected[i].name
 					completeFilePath = (newFilePath + "\\" + newFileName)  
 					exportFile completeFilePath #noPrompt selectedOnly:true using:FBXEXP
 				)
@@ -80,12 +76,18 @@ buttontext:"UDK Batch Exporter"
   )
   --ceci détermine la taille de MainWindow
 createDialog MainWindow 220 60
+)
 
-
-MeshSelected = getCurrentSelection()
-n = MeshSelected[i].name
-prefix = "MCDXCX"
-check = findString n prefix
-print n
-print check
-if check != undefined do continue
+-- MeshSelected = getCurrentSelection()
+-- n = MeshSelected[i].name
+-- prefix = "MCDXCX"
+-- check = findString n prefix
+-- print n
+-- print check
+-- if check != undefined do continue
+-- 	
+-- n = $.name
+-- obj = $
+-- c = "MCDCX_"+n as string
+-- c = getNodeByName c exact:true ignoreCase:true all:false 
+-- select #(obj,c)
