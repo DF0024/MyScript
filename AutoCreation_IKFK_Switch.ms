@@ -1,6 +1,29 @@
 IKSys.ikChain $box01 $box02 "IKHISolver"
 HDIKSys.ikChain $Box01 $Box04 TRUE 
 
+fn drawLineBetweenTwoPoints pointA pointB =
+(
+  ss = SplineShape pos:pointA
+  addNewSpline ss
+  addKnot ss 1 #corner #line PointA
+  addKnot ss 1 #corner #line PointB
+  updateShape ss
+  ss
+)
+newSpline = drawLineBetweenTwoPoints [-8,0,0] [8,0,0]
+newSpline2 = drawLineBetweenTwoPoints [0,-8,0] [0,8,0]
+newSpline3 = drawLineBetweenTwoPoints [0,0,-8] [0,0,8]
+addAndWeld $Shape001 $Shape002 -1
+addAndWeld $Shape001 $Shape003 -1
+$Shape001. name = "Pivot4Bone"
+$Pivot4Bone.pivot = [0,0,0]
+copy $Pivot4Bone
+$Pivot4Bone001.pos = [0,16,0]
+
+
+Shape001.render_displayRenderMesh:true
+
+Shape001.render_renderable BooleanClass default: true -- boolean; renderable
 
 -- Basic CTRL creation -------------------------------------
 BasicCTRL1=Circle()
